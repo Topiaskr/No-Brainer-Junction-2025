@@ -1,45 +1,43 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from load_data import load_excel_data, get_variable
+import json
 
-try:
-    data = load_excel_data()
-    
-    # Map row names to variables
-    all_sleep = get_variable(data, ['kokonaisuni', 'uni'])
-    REM = get_variable(data, ['rem', 'rem-uni'])
-    
-    # Check if data was loaded
-    if all_sleep is None or len(all_sleep) == 0:
-        print("Error: Could not find 'all_sleep' data in Excel file")
-        print("Available keys:", list(data.keys())[:10])
-        exit()
-    
-    # Generate x-axis
+
+# Load the list of dictionaries from array_data_to_dictionary
+with open("array_data_list.json", "r", encoding="utf-8") as f:
+    data_list = json.load(f)
+
+# Find 'kokonaisuni' (all_sleep) from the list
+all_sleep = None
+for item in data_list:
+    if "kokonaisuni" in item["name"].lower():
+        all_sleep = np.array(item["values"])
+        break
+
+if all_sleep is None:
+    print("Error: 'kokonaisuni' not found in array_data_list.json")
+    print("Available keys:")
+    for item in data_list[:10]:
+        print(f"  - {item['name']}")
+else:
+    # Generate x-axis (1..N)
     days = np.arange(1, len(all_sleep) + 1)
-    
-    # Create plot
+
+    # --- Plot the chart locally ---
     plt.figure(figsize=(10, 5))
-    plt.plot(days, all_sleep, marker='o', label='Total Sleep')
-    
-    if REM is not None and len(REM) > 0:
-        plt.plot(days, REM / 60, marker='x', label='REM (hours)')
-    
-    plt.title("Sleep Data Over Time")
+    plt.plot(days, all_sleep, marker='o')
+    plt.title("All Sleep Values Over Time")
     plt.xlabel("Day")
-    plt.ylabel("Hours")
+    plt.ylabel("Sleep Duration (hours)")
     plt.grid(True)
-    plt.legend()
-    
-    # Save and display
+
+    # --- Save to PNG file ---
     plt.savefig("sleep_chart.png", dpi=300)
     plt.close()
-    
+
     print("Saved: sleep_chart.png")
-    os.startfile("sleep_chart.png")
-    
-except Exception as e:
-    print(f"Error: {e}")
-    import traceback
-    traceback.print_exc()
+    try:
+        os.startfile("sleep_chart.png")
+    except Exception:
+        pass

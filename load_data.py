@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
 
-EXCEL_PATH = r"C:\Users\makel\Desktop\Test.xlsx"
+# Excel file in the same folder as this script
+EXCEL_PATH = "example_data.xlsx"
 SHEET_NAME = "DataSet_3"
 
 def load_excel_data(path=EXCEL_PATH, sheet=SHEET_NAME):
@@ -36,11 +37,12 @@ def load_excel_data(path=EXCEL_PATH, sheet=SHEET_NAME):
 
     return data_arrays
 
-def get_variable(data_arrays, patterns):
-    patterns = [p.lower() for p in patterns]
-    for key in data_arrays:
-        kl = key.lower()
-        for p in patterns:
-            if p in kl:
-                return data_arrays[key]
-    return None
+
+# Load and print all data
+if __name__ == "__main__":
+    data = load_excel_data()
+    print("Loaded data from", EXCEL_PATH)
+    print("\nAll data arrays:")
+    for key, arr in data.items():
+        print(f"{key}: {arr}")
+

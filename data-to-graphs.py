@@ -1,43 +1,31 @@
 import matplotlib.pyplot as plt
-import numpy as np
-import os
-import json
+import scores_and_results
 
+# Example: Plot means from results
+variables = list(scores_and_results.means.keys())
+mean_values = list(scores_and_results.means.values())
 
-# Load the list of dictionaries from array_data_to_dictionary
-with open("array_data_list.json", "r", encoding="utf-8") as f:
-    data_list = json.load(f)
+plt.figure(figsize=(12, 6))
+plt.bar(variables, mean_values)
+plt.xticks(rotation=90)
+plt.title("Mean Values from Results")
+plt.ylabel("Mean")
+plt.tight_layout()
+plt.show()
 
-# Find 'kokonaisuni' (all_sleep) from the list
-all_sleep = None
-for item in data_list:
-    if "kokonaisuni" in item["name"].lower():
-        all_sleep = np.array(item["values"])
-        break
+# Example: Plot standard deviations from results
+std_values = list(scores_and_results.stds.values())
 
-if all_sleep is None:
-    print("Error: 'kokonaisuni' not found in array_data_list.json")
-    print("Available keys:")
-    for item in data_list[:10]:
-        print(f"  - {item['name']}")
-else:
-    # Generate x-axis (1..N)
-    days = np.arange(1, len(all_sleep) + 1)
+plt.figure(figsize=(12, 6))
+plt.bar(variables, std_values)
+plt.xticks(rotation=90)
+plt.title("Standard Deviations from Results")
+plt.ylabel("Standard Deviation")
+plt.tight_layout()
+plt.show()
 
-    # --- Plot the chart locally ---
-    plt.figure(figsize=(10, 5))
-    plt.plot(days, all_sleep, marker='o')
-    plt.title("All Sleep Values Over Time")
-    plt.xlabel("Day")
-    plt.ylabel("Sleep Duration (hours)")
-    plt.grid(True)
+# Example: Use a score variable
+if hasattr(scores_and_results, 'rem_all_sleep_ratio'):
+    print("REM/All Sleep Ratio:", scores_and_results.rem_all_sleep_ratio)
 
-    # --- Save to PNG file ---
-    plt.savefig("sleep_chart.png", dpi=300)
-    plt.close()
-
-    print("Saved: sleep_chart.png")
-    try:
-        os.startfile("sleep_chart.png")
-    except Exception:
-        pass
+# You can use any variable from results.py in your plots or calculations
